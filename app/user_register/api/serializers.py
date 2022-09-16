@@ -1,17 +1,20 @@
-import uuid
-from user_register.services import generate_registry
+from typing import Any, Dict
+from user_register.services import UserFactory
+from core.models import User
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serializes the user objects"""
+
     role_choices = (
         ("staff", "Staff"),
         ("student", "Student"),
         ("teacher", "Teacher"),
     )
 
-    registry = serializers.CharField(read_only=True)
+    register = serializers.CharField(default="", style={"input_type": "hidden"})
 
     password = serializers.CharField(
         required=True,
@@ -26,22 +29,19 @@ class UserSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """User serializer meta data"""
+
         model = get_user_model()
-        fields = ["registry", "first_name", "last_name", "password", "role"]
+        fields = ["register", "first_name", "last_name", "password", "role"]
 
-    def create(self, validated_data):
-        creation_method_dict = {
-            "student": get_user_model().objects.create_student,
-            "teacher": get_user_model().objects.create_professor,
-            "staff": get_user_model().objects.create_superuser,
-        }
+    def create(self, validated_data: Dict[str, Any]) -> User:
+        """Creates a new user and return it
 
-        role = validated_data.pop("role")
-        print(validated_data)
+        Args:
+            validated_data (Dict[str, Any]): the request data
 
-        registry = generate_registry()
-
-        return creation_method_dict.get(role)(
-            registry=registry,
-            **validated_data,
-        )
+        Returns:
+            User: the new user
+        """
+        factory = UserFactory()
+        return factory.make_user(**validated_data)

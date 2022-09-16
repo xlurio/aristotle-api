@@ -27,7 +27,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = models.User
-        fields = ("registry",)
+        fields = ("register",)
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

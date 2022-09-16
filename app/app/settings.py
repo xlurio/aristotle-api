@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "core",
     "user_register",
+    "classroom_creation",
+    "grade_register",
+    "absence_register",
 ]
 
 MIDDLEWARE = [

@@ -7,7 +7,7 @@ from core import models
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("registry", "password")}),
+        (None, {"fields": ("register", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
         (
             _("Permissions"),
@@ -28,20 +28,17 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("registry", "password1", "password2"),
+                "fields": ("register", "password1", "password2"),
             },
         ),
     )
     form = forms.UserChangeForm
     add_form = forms.UserCreationForm
-    list_display = ("registry", "first_name", "last_name", "is_staff")
+    list_display = ("register", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
-    search_fields = ("registry", "first_name", "last_name")
-    ordering = ("registry",)
-    filter_horizontal = (
-        "groups",
-        "user_permissions",
-    )
+    search_fields = ("register", "first_name", "last_name")
+    ordering = ("register",)
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.ClassRoom)

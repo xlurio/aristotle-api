@@ -7,4 +7,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("users/", include("user_register.urls")),
     path("token/", views.obtain_auth_token, name="token"),
+    path("classrooms/", include("classroom_creation.urls")),
+    path("grades/", include("grade_register.urls")),
+    path("absences/", include("absence_register.urls")),
 ]
