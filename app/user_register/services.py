@@ -32,7 +32,7 @@ class GroupFactory:
 
         for permission in professor_permissions:
             if permission not in professor_group.permissions:
-                professor_group.add(permission)
+                professor_group.permissions.add(permission)
 
         return professor_group
 
@@ -47,7 +47,7 @@ class GroupFactory:
 
         for permission in student_permissions:
             if permission not in student_group.permissions:
-                student_group.add(permission)
+                student_group.permissions.add(permission)
 
         return student_group
 
@@ -58,7 +58,7 @@ class UserFactory:
     _users = get_user_model().objects
     _groups = GroupFactory()
 
-    def make_user(self, **user_data: Dict[str, Any]) -> User:
+    def make_user(self, **user_data: Any) -> User:
         """Creates and stores an user object
 
         Args:
@@ -102,8 +102,12 @@ class UserFactory:
             "teacher": self._make_professor,
             "staff": self._make_superuser,
         }
+        creation_method = creation_method_dict.get(role)
 
-        return creation_method_dict.get(role)
+        if creation_method:
+            return creation_method
+
+        raise InvalidUserException(f"{role} is not a valid role")
 
     def _make_professor(self, password: str, **kwargs: Any) -> User:
         professor_group = self._groups.make_professor_group()
@@ -115,7 +119,7 @@ class UserFactory:
 
         return professor
 
-    def _make_professor(self, password: str, **kwargs) -> User:
+    def _make_student(self, password: str, **kwargs) -> User:
         student_group = self._groups.make_student_group()
 
         student = self._users.create_user(password, **kwargs)
