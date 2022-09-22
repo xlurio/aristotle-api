@@ -130,3 +130,6 @@ dmypy.json
 
 # Text Editor
 .vscode/
+
+# Django
+migrations/
