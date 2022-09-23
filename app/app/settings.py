@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "classroom_creation",
     "grade_register",
     "absence_register",
+    "student_consulting",
 ]
 
 MIDDLEWARE = [
