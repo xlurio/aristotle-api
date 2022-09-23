@@ -2,7 +2,7 @@ from datetime import date
 from typing import Any
 import uuid
 from core.models import ClassRoom
-from core.exceptions import InvalidClassRoomException
+from classroom_creation.exceptions import InvalidClassRoomException
 
 
 class ClassRoomFactory:

@@ -8,11 +8,7 @@ from django.contrib.auth import get_user_model
 class UserSerializer(serializers.ModelSerializer):
     """Serializes the user objects"""
 
-    role_choices = (
-        ("staff", "Staff"),
-        ("student", "Student"),
-        ("teacher", "Teacher"),
-    )
+    role_choices = (("student", "Student"), ("teacher", "Teacher"), ("staff", "Staff"))
 
     register = serializers.CharField(default="", style={"input_type": "hidden"})
 

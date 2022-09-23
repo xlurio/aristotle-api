@@ -45,6 +45,7 @@ class ClassRoom(models.Model):
         settings.AUTH_USER_MODEL,
         verbose_name=_("members"),
     )
+    school_days = models.IntegerField(default=100)
     start = models.DateField(_("start"))
     deadline = models.DateField(_("deadline"))
 
@@ -58,6 +59,7 @@ class ClassRoom(models.Model):
 class Grade(models.Model):
     """Model for storing grades"""
 
+    title = models.CharField(max_length=256)
     grade = models.IntegerField(_("grade"))
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,

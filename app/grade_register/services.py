@@ -1,7 +1,7 @@
 from datetime import date
 from core.models import ClassRoom, Grade, User
 from django.contrib.auth.models import Group
-from core.exceptions import InvalidGradeException
+from grade_register.exceptions import InvalidGradeException
 
 
 class GradeFactory:
@@ -17,6 +17,9 @@ class GradeFactory:
         Returns:
             Grade: the new grade
         """
+        title: str = grade_data.get("title", "")
+        self._check_title(title)
+
         grade: int = grade_data.get("grade", 0)
         self._check_grade(grade)
 
@@ -36,6 +39,13 @@ class GradeFactory:
         self._check_classroom_status(classroom)
 
         return self._grades.create(**grade_data)
+
+    def _check_title(self, title: str) -> None:
+        title_length = len(title)
+        is_title_empty = title_length < 1
+
+        if is_title_empty:
+            raise InvalidGradeException(f"A title must be set")
 
     def _check_grade(self, grade: int) -> None:
         is_positive = grade >= 0

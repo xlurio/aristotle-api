@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 from core.models import Absence, ClassRoom, User
-from core.exceptions import InvalidAbsenceException
+from absence_register.exceptions import InvalidAbsenceException
 from datetime import date
 
 

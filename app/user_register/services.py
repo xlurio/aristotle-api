@@ -1,7 +1,7 @@
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 import uuid
 from core.models import Absence, Grade, User
-from core.exceptions import InvalidUserException
+from user_register.exceptions import InvalidUserException
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -21,22 +21,30 @@ def generate_register() -> str:
 class GroupFactory:
     """Service for creating group objects"""
 
-    def make_professor_group(self) -> Group:
-        professor_group, _ = Group.objects.get_or_create(name="professor")
+    def make_teacher_group(self) -> Group:
+        """Create or get the teachers group
+
+        Returns:
+            Group: the teachers group
+        """
+        teacher_group, _ = Group.objects.get_or_create(name="teacher")
 
         models = [Absence, Grade]
         content_types = [ContentType.objects.get_for_model(model) for model in models]
-        professor_permissions = Permission.objects.filter(
-            content_type__in=content_types
-        )
+        teacher_permissions = Permission.objects.filter(content_type__in=content_types)
 
-        for permission in professor_permissions:
-            if permission not in professor_group.permissions:
-                professor_group.permissions.add(permission)
+        for permission in teacher_permissions:
+            if permission not in teacher_group.permissions:
+                teacher_group.permissions.add(permission)
 
-        return professor_group
+        return teacher_group
 
     def make_student_group(self) -> Group:
+        """Create or get the students group
+
+        Returns:
+            Group: the students group
+        """
         student_group, _ = Group.objects.get_or_create(name="student")
 
         models = [Absence, Grade]
@@ -98,8 +106,8 @@ class UserFactory:
 
     def _get_creation_method(self, role: str) -> Callable[[Any], User]:
         creation_method_dict = {
-            "student": self._make_professor,
-            "teacher": self._make_professor,
+            "student": self._make_student,
+            "teacher": self._make_teacher,
             "staff": self._make_superuser,
         }
         creation_method = creation_method_dict.get(role)
@@ -109,17 +117,17 @@ class UserFactory:
 
         raise InvalidUserException(f"{role} is not a valid role")
 
-    def _make_professor(self, password: str, **kwargs: Any) -> User:
-        professor_group = self._groups.make_professor_group()
+    def _make_teacher(self, password: str, **kwargs: Any) -> User:
+        teacher_group = self._groups.make_teacher_group()
 
-        professor = self._users.create_user(password, **kwargs)
-        professor.groups.add(professor_group)
+        teacher = self._users.create_user(password, **kwargs)
+        teacher.groups.add(teacher_group)
 
-        professor.save()
+        teacher.save()
 
-        return professor
+        return teacher
 
-    def _make_student(self, password: str, **kwargs) -> User:
+    def _make_student(self, password: str, **kwargs: Any) -> User:
         student_group = self._groups.make_student_group()
 
         student = self._users.create_user(password, **kwargs)
@@ -129,5 +137,5 @@ class UserFactory:
 
         return student
 
-    def _make_superuser(self, password: str, **kwargs) -> User:
-        return self._users.create_superuser(password, **kwargs)
+    def _make_superuser(self, password: str, **kwargs: Any) -> User:
+        return self._users.create_superuser(password=password, **kwargs)
