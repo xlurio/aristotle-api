@@ -49,10 +49,5 @@ class AbsenceFactory:
             raise InvalidAbsenceException(f"Student {student} not in class {classroom}")
 
     def _check_classroom_status(self, classroom: ClassRoom) -> None:
-        today = date.today()
-        did_class_begun = today > classroom.start
-        did_class_ended = today > classroom.deadline
-        is_date_valid = did_class_begun and not did_class_ended
-
-        if not is_date_valid:
+        if not classroom.is_active:
             raise InvalidAbsenceException(f"Class {classroom} is not active anymore")

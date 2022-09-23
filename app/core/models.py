@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import date
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -54,6 +55,14 @@ class ClassRoom(models.Model):
 
         verbose_name = _("class room")
         verbose_name_plural = _("class rooms")
+
+    @property
+    def is_active(self) -> bool:
+        """Property to inform if the classroom is active"""
+        today = date.today()
+        did_class_begun = today > self.start
+        did_class_ended = today > self.deadline
+        return did_class_begun and not did_class_ended
 
 
 class Grade(models.Model):
