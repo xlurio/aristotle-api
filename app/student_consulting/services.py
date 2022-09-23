@@ -50,6 +50,7 @@ class StudentDataFactory:
         grade_details: list[GradeDetail] = []
         read_only_grade: ReadOnlyGrade
         grades: list[ReadOnlyGrade] = []
+        average: float
 
         for classroom_id, classroom_instance in grade_classrooms.items():
             classroom_name = classroom_instance.name
@@ -62,8 +63,10 @@ class StudentDataFactory:
                 for instance in classroom_grade_instances
             ]
 
+            average = self._get_grades_average(grade_details)
+
             read_only_grade = ReadOnlyGrade(
-                classroom=classroom_name, grades=grade_details
+                classroom=classroom_name, average=average, grades=grade_details
             )
 
             grades.append(read_only_grade)
@@ -79,6 +82,17 @@ class StudentDataFactory:
             grade_classrooms[instance_classroom.id] = instance_classroom
 
         return grade_classrooms
+
+    def _get_grades_average(self, grade_instances: list[GradeDetail]) -> float:
+        grade_instance: GradeDetail
+        grade_sum: int = 0
+
+        for grade_instance in grade_instances:
+            grade_sum += grade_instance.grade
+
+        number_of_grades = len(grade_instances)
+
+        return grade_sum / number_of_grades
 
     def _get_absences(self) -> list[ReadOnlyAbsence]:
         absence_classrooms: dict[int, ClassRoom] = self._get_absence_classrooms()

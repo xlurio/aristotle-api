@@ -13,6 +13,7 @@ class ReadOnlyGrade(BaseModel):
     """Model for reading grade data"""
 
     classroom: str
+    average: float
     grades: list[GradeDetail]
 
 
