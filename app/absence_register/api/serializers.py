@@ -1,7 +1,7 @@
 from typing import Any
 from rest_framework import serializers
 from core import models
-from absence_register.services import AbsenceFactory
+from absence_register.services import AbsenceFactory, ReadOnlyAbsenceFactory
 from django.contrib.auth import get_user_model
 
 
@@ -23,4 +23,10 @@ class AbsenceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: Any) -> models.Absence:
         factory = AbsenceFactory()
-        return factory.make_absence(**validated_data)
+        new_absence = factory.make_absence(**validated_data)
+
+        read_only_factory = ReadOnlyAbsenceFactory(new_absence)
+        new_read_only_absence = read_only_factory.make_absence()
+        new_read_only_absence.save()
+
+        return new_absence

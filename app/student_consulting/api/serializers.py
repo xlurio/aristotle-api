@@ -1,32 +1,66 @@
+from dataclasses import fields
 from rest_framework import serializers
+from core.models import (
+    AbsenceDate,
+    GradeDetails,
+    ReadOnlyAbsence,
+    ReadOnlyGrade,
+    Student,
+)
 
 
-class GradeDetailSerializer(serializers.Serializer):
-    """Serializer for the grade details"""
+class GradeDetailsSerializer(serializers.ModelSerializer):
+    """Serializer for the grade detailed data"""
 
-    title = serializers.CharField(max_length=254, read_only=True)
-    grade = serializers.IntegerField(read_only=True)
+    class Meta:
+        """Grade value serializer meta data"""
 
-
-class GradeSerializer(serializers.Serializer):
-    """Serializer for the grade objects"""
-
-    class_room = serializers.CharField(max_length=254, read_only=True)
-    grades = GradeDetailSerializer(many=True, read_only=True)
+        model = GradeDetails
+        fields = ["title", "grade_value"]
 
 
-class AbsenceSerializer(serializers.Serializer):
-    """Serializer for the absence objects"""
+class GradeSerializer(serializers.ModelSerializer):
+    """Serializer for the grade data"""
 
-    class_room = serializers.CharField(max_length=254, read_only=True)
-    absence_amount = serializers.IntegerField(read_only=True)
-    frequency = serializers.FloatField(read_only=True)
-    absence_dates = serializers.DateField(read_only=True)
+    grade_values = GradeDetailsSerializer(many=True, read_only=True)
+
+    class Meta:
+        """Grade serializer meta data"""
+
+        model = ReadOnlyGrade
+        fields = ["classroom", "average", "grade_values"]
 
 
-class StudentSerializer(serializers.Serializer):
-    """Serializer for the student data"""
+class AbsenceDateSerializer(serializers.ModelSerializer):
+    """Serializer for the absence dates data"""
 
-    student = serializers.CharField(max_length=254, read_only=True)
+    class Meta:
+        """Absence detail serializer meta data"""
+
+        model = AbsenceDate
+        fields = ["absence_data"]
+
+
+class AbsenceSerializer(serializers.ModelSerializer):
+    """Serializer for the absence data"""
+
+    absence_dates = AbsenceDateSerializer(many=True, read_only=True)
+
+    class Meta:
+        """Absence serializer meta data"""
+
+        model = ReadOnlyAbsence
+        fields = ["class_room", "absence_amount", "frequency", "absence_dates"]
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    """Seriazer for the student data"""
+
     grades = GradeSerializer(many=True, read_only=True)
     absences = AbsenceSerializer(many=True, read_only=True)
+
+    class Meta:
+        """Student serializer meta data"""
+
+        model = Student
+        fields = ["student", "grades", "absences"]

@@ -104,3 +104,89 @@ class Absence(models.Model):
 
         verbose_name = _("absence")
         verbose_name_plural = _("absences")
+
+
+# Read only
+
+
+class Student(models.Model):
+    """Model for reading student data"""
+
+    user_id = models.IntegerField(unique=True, null=False)
+    student = models.CharField(_("student"), max_length=256)
+
+
+class ReadOnlyGrade(models.Model):
+    """Model for reading grade data"""
+
+    classroom = models.CharField(_("class room"), max_length=256)
+    average = models.FloatField(_("average"), max_length=256)
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name="grades",
+        verbose_name=_("student"),
+    )
+
+
+class GradeDetails(models.Model):
+    """Model for reading grade details"""
+
+    title = models.CharField(_("title"), max_length=256)
+    grade_value = models.IntegerField(_("grade value"))
+    grade = models.ForeignKey(
+        ReadOnlyGrade,
+        on_delete=models.CASCADE,
+        verbose_name=_("grade"),
+        related_name="grade_values",
+    )
+
+
+class ReadOnlyAbsence(models.Model):
+    """Model for reading absence data"""
+
+    class_room = models.CharField(_("class room"), max_length=256)
+    absence_amount = models.IntegerField(_("absence amount"))
+    frequency = models.FloatField(_("frequency"))
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name="absences",
+        verbose_name=_("student"),
+    )
+
+
+class AbsenceDate(models.Model):
+    """Model for reading absence dates data"""
+
+    absence_date = models.DateField(_("date"))
+    absence = models.ForeignKey(
+        ReadOnlyAbsence,
+        on_delete=models.CASCADE,
+        verbose_name=_("absence"),
+        related_name="absence_dates",
+    )
+
+
+class ClassRoomDetails(models.Model):
+    """Model for reading the detailed data of a class room"""
+
+    subject = models.CharField(_("subject"))
+    students = models.ManyToManyField(Student, verbose_name=_("students"))
+
+
+class ReadOnlyClassroom(models.Model):
+    """Models for reading the teacher classrooms data"""
+
+    classroom_id = models.IntegerField(_("classroom ID"))
+    name = models.CharField(_("name"), max_length=256)
+
+
+class Teacher(models.Model):
+    """Model for reading the teacher data"""
+
+    user_id = models.IntegerField()
+    teacher = models.CharField(_("teacher"), max_length=256)
+    classrooms = models.ManyToManyField(
+        ReadOnlyClassroom, verbose_name=_("class rooms")
+    )

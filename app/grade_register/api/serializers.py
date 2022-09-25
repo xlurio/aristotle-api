@@ -1,7 +1,7 @@
 from typing import Any
 from rest_framework import serializers
 from core import models
-from grade_register.services import GradeFactory
+from grade_register.services import GradeFactory, ReadOnlyGradeFactory
 from django.contrib.auth import get_user_model
 
 
@@ -19,4 +19,10 @@ class GradeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: Any) -> models.Grade:
         factory = GradeFactory()
-        return factory.make_grade(**validated_data)
+        new_grade = factory.make_grade(**validated_data)
+
+        read_only_factory = ReadOnlyGradeFactory(new_grade)
+        new_read_only_grade = read_only_factory.make_grade()
+        new_read_only_grade.save()
+
+        return new_grade

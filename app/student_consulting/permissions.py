@@ -9,6 +9,6 @@ class IsStudent(BasePermission):
 
     def has_permission(self, request: Request, _: View):
         user: User = request.user
-        student_permissions = ("view_grade", "view_absence")
+        student_permissions = ["view_grade", "view_absence"]
 
         return user.has_perms(student_permissions)

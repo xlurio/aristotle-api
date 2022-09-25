@@ -1,5 +1,7 @@
 from django.contrib.auth.models import Group
-from core.models import Absence, ClassRoom, User
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
+from core.models import Absence, ClassRoom, ReadOnlyAbsence, Student, User
 from absence_register.exceptions import InvalidAbsenceException
 from datetime import date
 
@@ -51,3 +53,57 @@ class AbsenceFactory:
     def _check_classroom_status(self, classroom: ClassRoom) -> None:
         if not classroom.is_active:
             raise InvalidAbsenceException(f"Class {classroom} is not active anymore")
+
+
+class ReadOnlyAbsenceFactory:
+    _absences = Absence.objects
+    _read_only_absences = ReadOnlyAbsence.objects
+    _students = Student.objects
+
+    def __init__(self, absence: Absence) -> None:
+        self._absence = absence
+        self._student_absences = self._get_student_absences()
+
+    def _get_student_absences(self) -> QuerySet[Absence]:
+        student_user: User = self._absence.student
+        student_absences: QuerySet[Absence] = self._absences.filter(
+            student__id=student_user
+        )
+
+        classroom: ClassRoom = self._absence.classroom
+
+        return student_absences.filter(classroom__id=classroom.id)
+
+    def make_absence(self) -> ReadOnlyAbsence:
+        classroom: str = self._absence.classroom.name
+        absence_amount = len(self._student_absences)
+        frequency = self._get_frequency()
+        student, _ = self._get_student()
+
+        return self._read_only_absences.create(
+            classroom=classroom,
+            absence_amount=absence_amount,
+            frequency=frequency,
+            student=student,
+        )
+
+    def _get_frequency(self) -> float:
+        classroom: ClassRoom = self._absence.classroom
+        school_days = classroom.school_days
+        number_of_absences = len(self._student_absences)
+
+        return (school_days - number_of_absences) / school_days
+
+    def _get_student(self) -> Student:
+        try:
+            student: Student = self._students.get(user_id=self._absence.student.id)
+            return student
+
+        except ObjectDoesNotExist:
+            student_user: User = self._absence.student
+            student: Student = self._students.create(
+                user_id=student_user.id, student=student_user.full_name
+            )
+            student.save()
+
+            return student

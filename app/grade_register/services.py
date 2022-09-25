@@ -1,10 +1,14 @@
 from datetime import date
-from core.models import ClassRoom, Grade, User
+from core.models import ClassRoom, Grade, ReadOnlyGrade, Student, User
 from django.contrib.auth.models import Group
+from django.db.models.query import QuerySet
+from django.core.exceptions import ObjectDoesNotExist
 from grade_register.exceptions import InvalidGradeException
 
 
 class GradeFactory:
+    """Factory for creating new grade objects"""
+
     STUDENT_GROUP, _ = Group.objects.get_or_create(name="student")
     _grades = Grade.objects
 
@@ -70,3 +74,54 @@ class GradeFactory:
     def _check_classroom_status(self, classroom: ClassRoom) -> None:
         if not classroom.is_active:
             raise InvalidGradeException(f"Class {classroom} is not active anymore")
+
+
+class ReadOnlyGradeFactory:
+    """Factory for creating read only grades"""
+
+    _students = Student.objects
+    _read_only_grades = ReadOnlyGrade.objects
+    _grades = Grade.objects
+
+    def __init__(self, grade: Grade) -> None:
+        self._grade = grade
+
+    def make_grade(self) -> ReadOnlyGrade:
+        classroom: str = self._grade.classroom.name
+        average = self._get_average()
+        student, _ = self._get_student()
+
+        return self._read_only_grades.create(
+            classroom=classroom, average=average, student=student
+        )
+
+    def _get_average(self) -> float:
+        student_grades: QuerySet[Grade] = self._grades.filter(
+            student__id=self._grade.student.id,
+        )
+        classroom_grades: QuerySet[Grade] = student_grades.filter(
+            classroom__id=self._grade.classroom.id,
+        )
+        grade_instance: Grade
+        grade_sum: int
+
+        for grade_instance in classroom_grades:
+            grade_sum += grade_instance.grade
+
+        number_of_grades = len(classroom_grades)
+
+        return grade_sum / number_of_grades
+
+    def _get_student(self) -> Student:
+        try:
+            student = self._students.get(user_id=self._grade.student.id)
+            return student
+
+        except ObjectDoesNotExist:
+            student_user: User = self._grade.student
+            student = self._students.create(
+                user_id=student_user.id, student=student_user.full_name
+            )
+            student.save()
+
+            return student
