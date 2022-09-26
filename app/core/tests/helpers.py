@@ -80,7 +80,7 @@ def make_fake_student(password: str, **kwargs: object) -> User:
     return student
 
 
-def make_fake_student(password: str, **kwargs: object) -> User:
+def make_fake_teacher(password: str, **kwargs: object) -> User:
     """Creates a student for testing
 
     Args:
