@@ -109,84 +109,78 @@ class Absence(models.Model):
 # Read only
 
 
-class Student(models.Model):
-    """Model for reading student data"""
+class StudentClassroom(models.Model):
+    """Model for reading student class room data"""
 
-    user_id = models.IntegerField(unique=True, null=False)
+    user_id = models.IntegerField(null=False)
+    classroom_id = models.IntegerField(null=False)
     student = models.CharField(_("student"), max_length=256)
 
 
-class ReadOnlyGrade(models.Model):
-    """Model for reading grade data"""
+class TeacherClassroom(models.Model):
+    """Model for reading teacher class room data"""
 
+    user_id = models.IntegerField(null=False)
+    classroom_id = models.IntegerField(null=False)
     classroom = models.CharField(_("class room"), max_length=256)
-    average = models.FloatField(_("average"), max_length=256)
-    student = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE,
-        related_name="grades",
-        verbose_name=_("student"),
+
+
+class ClassroomStudent(models.Model):
+    """Model for reading class room student data"""
+
+    student = models.CharField(_("student"), max_length=256)
+    classroom = models.ForeignKey(
+        TeacherClassroom, on_delete=models.CASCADE, related_name="students"
     )
 
 
-class GradeDetails(models.Model):
+class ClassroomGrade(models.Model):
+    """Model for reading grade data"""
+
+    average = models.FloatField(_("average"), max_length=256, default=0.0)
+    classroom = models.ForeignKey(
+        StudentClassroom,
+        on_delete=models.CASCADE,
+        related_name="grades",
+    )
+    student = models.ForeignKey(
+        ClassroomStudent, on_delete=models.CASCADE, related_name="grades"
+    )
+
+
+class GradeDetail(models.Model):
     """Model for reading grade details"""
 
     title = models.CharField(_("title"), max_length=256)
     grade_value = models.IntegerField(_("grade value"))
-    grade = models.ForeignKey(
-        ReadOnlyGrade,
+    classroom_grade = models.ForeignKey(
+        ClassroomGrade,
         on_delete=models.CASCADE,
-        verbose_name=_("grade"),
         related_name="grade_values",
     )
 
 
-class ReadOnlyAbsence(models.Model):
+class ClassroomAbsence(models.Model):
     """Model for reading absence data"""
 
-    class_room = models.CharField(_("class room"), max_length=256)
-    absence_amount = models.IntegerField(_("absence amount"))
-    frequency = models.FloatField(_("frequency"))
-    student = models.ForeignKey(
-        Student,
+    absence_amount = models.IntegerField(_("absence amount"), default=0)
+    frequency = models.FloatField(_("frequency"), default=1.0)
+    classroom = models.ForeignKey(
+        StudentClassroom,
         on_delete=models.CASCADE,
         related_name="absences",
-        verbose_name=_("student"),
+    )
+    student = models.ForeignKey(
+        ClassroomStudent, on_delete=models.CASCADE, related_name="grades"
     )
 
 
-class AbsenceDate(models.Model):
+class AbsenceDetail(models.Model):
     """Model for reading absence dates data"""
 
     absence_date = models.DateField(_("date"))
-    absence = models.ForeignKey(
-        ReadOnlyAbsence,
+    classroom_absence = models.ForeignKey(
+        ClassroomAbsence,
         on_delete=models.CASCADE,
-        verbose_name=_("absence"),
         related_name="absence_dates",
-    )
-
-
-class ClassRoomDetails(models.Model):
-    """Model for reading the detailed data of a class room"""
-
-    subject = models.CharField(_("subject"))
-    students = models.ManyToManyField(Student, verbose_name=_("students"))
-
-
-class ReadOnlyClassroom(models.Model):
-    """Models for reading the teacher classrooms data"""
-
-    classroom_id = models.IntegerField(_("classroom ID"))
-    name = models.CharField(_("name"), max_length=256)
-
-
-class Teacher(models.Model):
-    """Model for reading the teacher data"""
-
-    user_id = models.IntegerField()
-    teacher = models.CharField(_("teacher"), max_length=256)
-    classrooms = models.ManyToManyField(
-        ReadOnlyClassroom, verbose_name=_("class rooms")
     )

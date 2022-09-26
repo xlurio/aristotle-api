@@ -1,6 +1,10 @@
-from django.urls import path
+from core.routers import ReadOnlyRouter
 from student_consulting.api.views import StudentViewSet
+
+
+router = ReadOnlyRouter()
+router.register("classrooms", StudentViewSet, "classroom")
 
 app_name = "students"
 
-urlpatterns = [path("", StudentViewSet.as_view({"get": "list"}), name="students-list")]
+urlpatterns = router.urls

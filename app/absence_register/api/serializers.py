@@ -26,7 +26,7 @@ class AbsenceSerializer(serializers.ModelSerializer):
         new_absence = factory.make_absence(**validated_data)
 
         read_only_factory = ReadOnlyAbsenceFactory(new_absence)
-        new_read_only_absence = read_only_factory.make_absence()
-        new_read_only_absence.save()
+        absence_classroom = read_only_factory.make_absence()
+        absence_classroom.save()
 
         return new_absence

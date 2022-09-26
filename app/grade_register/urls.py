@@ -1,6 +1,9 @@
-from django.urls import path
+from core.routers import WriteOnlyRouter
 from grade_register.api.views import GradeViewSet
+
+router = WriteOnlyRouter()
+router.register("grades", GradeViewSet, "grade")
 
 app_name = "grades"
 
-urlpatterns = [path("", GradeViewSet.as_view({"post": "create"}), name="grade-list")]
+urlpatterns = router.urls

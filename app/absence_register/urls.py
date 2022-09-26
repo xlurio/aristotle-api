@@ -1,8 +1,9 @@
-from django.urls import path
 from absence_register.api.views import AbsenceViewSet
+from core.routers import WriteOnlyRouter
+
+router = WriteOnlyRouter()
+router.register(r"absences", AbsenceViewSet, "absence")
 
 app_name = "absences"
 
-urlpatterns = [
-    path("", AbsenceViewSet.as_view({"post": "create"}), name="absence-list")
-]
+urlpatterns = router.urls

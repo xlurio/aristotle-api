@@ -1,12 +1,9 @@
-from django.urls import path
+from core.routers import WriteOnlyRouter
 from classroom_creation.api.views import ClassRoomViewSet
+
+router = WriteOnlyRouter()
+router.register("classrooms", ClassRoomViewSet, "classroom")
 
 app_name = "classrooms"
 
-urlpatterns = [
-    path(
-        "",
-        ClassRoomViewSet.as_view(actions={"post": "create"}),
-        name="classroom-list",
-    ),
-]
+urlpatterns = router.urls

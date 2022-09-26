@@ -1,8 +1,9 @@
-from django.urls import path
+from core.routers import WriteOnlyRouter
 from user_register.api.views import UserViewSet
+
+router = WriteOnlyRouter()
+router.register("users", UserViewSet, "user")
 
 app_name = "users"
 
-urlpatterns = [
-    path("", UserViewSet.as_view(actions={"post": "create"}), name="user-list"),
-]
+urlpatterns = router.urls
