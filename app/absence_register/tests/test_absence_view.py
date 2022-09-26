@@ -15,8 +15,10 @@ class PrivateAbsenceViewTests:
 
     def setUp(self):
         """Will run before each test"""
-        self._teacher = make_fake_teacher(first_name="Teacher", password="12345")
         self._client = APIClient()
+
+        teacher = make_fake_teacher(first_name="Teacher", password="12345")
+        self._client.force_authenticate(teacher)
 
     def test_create(self) -> None:
         """Test registering a absence"""
