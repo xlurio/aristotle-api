@@ -171,7 +171,7 @@ class ClassroomAbsence(models.Model):
         related_name="absences",
     )
     student = models.ForeignKey(
-        ClassroomStudent, on_delete=models.CASCADE, related_name="grades"
+        ClassroomStudent, on_delete=models.CASCADE, related_name="absences"
     )
 
 

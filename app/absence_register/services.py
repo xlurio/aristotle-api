@@ -1,4 +1,3 @@
-from typing import Iterable
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from core.models import (
@@ -10,12 +9,13 @@ from core.models import (
     StudentClassroom,
     User,
 )
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from absence_register.exceptions import InvalidAbsenceException
 from datetime import date
 
 
 class AbsenceFactory:
-    # STUDENT_GROUP = Group.objects.get(name="student")
+    STUDENT_GROUP, _ = Group.objects.get_or_create(name="student")
     _absences = Absence.objects
 
     def make_absence(self, **absence_data) -> Absence:
@@ -47,15 +47,15 @@ class AbsenceFactory:
         return self._absences.create(**absence_data)
 
     def _check_student(self, user_to_check: User) -> None:
-        user_groups: Iterable[Group] = user_to_check.groups
+        user_groups: ManyToManyDescriptor = user_to_check.groups
 
-        """ if self.STUDENT_GROUP not in user_groups:
-            raise InvalidAbsenceException("Invalid student") """
+        if self.STUDENT_GROUP not in user_groups.all():
+            raise InvalidAbsenceException("Invalid student")
 
     def _is_student_in_class(self, student: User, classroom: ClassRoom) -> None:
-        class_members: Iterable[User] = classroom.members
+        class_members: ManyToManyDescriptor = classroom.members
 
-        if student not in class_members:
+        if student not in class_members.all():
             raise InvalidAbsenceException(f"Student {student} not in class {classroom}")
 
     def _check_classroom_status(self, classroom: ClassRoom) -> None:

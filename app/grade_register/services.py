@@ -17,8 +17,8 @@ from grade_register.exceptions import InvalidGradeException
 class GradeFactory:
     """Factory for creating new grade objects"""
 
-    """ STUDENT_GROUP = Group.objects.get(name="student")
-    _grades = Grade.objects """
+    STUDENT_GROUP, _ = Group.objects.get_or_create(name="student")
+    _grades = Grade.objects
 
     def make_grade(self, **grade_data) -> Grade:
         """Creates and stores a grade
@@ -70,8 +70,8 @@ class GradeFactory:
     def _check_student(self, user_to_check: User) -> None:
         user_groups = user_to_check.groups
 
-        """ if self.STUDENT_GROUP not in user_groups:
-            raise InvalidGradeException("Invalid student") """
+        if self.STUDENT_GROUP not in user_groups:
+            raise InvalidGradeException("Invalid student")
 
     def _is_student_in_class(self, student: User, classroom: ClassRoom) -> None:
         class_members = classroom.members

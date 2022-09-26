@@ -38,7 +38,7 @@ class FakeGroupFactory:
         teacher_permissions = Permission.objects.filter(content_type__in=content_types)
 
         for permission in teacher_permissions:
-            if permission not in teacher_group.permissions:
+            if permission not in teacher_group.permissions.all():
                 teacher_group.permissions.add(permission)
 
         return teacher_group
@@ -58,7 +58,7 @@ class FakeGroupFactory:
         )
 
         for permission in student_permissions:
-            if permission not in student_group.permissions:
+            if permission not in student_group.permissions.all():
                 student_group.permissions.add(permission)
 
         return student_group
