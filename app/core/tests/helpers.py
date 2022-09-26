@@ -7,10 +7,6 @@ from core.models import Absence, ClassRoom, Grade, User
 from django.contrib.contenttypes.models import ContentType
 
 
-class InvalidUserException(Exception):
-    """Raised when an user is created with invalid data"""
-
-
 def generate_fake_register() -> str:
     """Generates a registration number for tests
 
@@ -22,127 +18,88 @@ def generate_fake_register() -> str:
     return str(registry)
 
 
-class FakeGroupFactory:
-    """Group factory for testing"""
+def _make_fake_student_group() -> Group:
+    """Create or get the students group for tests
 
-    def make_teacher_group(self) -> Group:
-        """Create or get the teachers group
+    Returns:
+        Group: the students group
+    """
+    student_group, _ = Group.objects.get_or_create(name="student")
 
-        Returns:
-            Group: the teachers group
-        """
-        teacher_group, _ = Group.objects.get_or_create(name="teacher")
+    models = [Absence, Grade]
+    content_types = [ContentType.objects.get_for_model(model) for model in models]
+    student_permissions = Permission.objects.filter(
+        content_type__in=content_types, codename__startswith="view_"
+    )
 
-        models = [Absence, Grade]
-        content_types = [ContentType.objects.get_for_model(model) for model in models]
-        teacher_permissions = Permission.objects.filter(content_type__in=content_types)
+    for permission in student_permissions:
+        if permission not in student_group.permissions.all():
+            student_group.permissions.add(permission)
 
-        for permission in teacher_permissions:
-            if permission not in teacher_group.permissions.all():
-                teacher_group.permissions.add(permission)
-
-        return teacher_group
-
-    def make_student_group(self) -> Group:
-        """Create or get the students group
-
-        Returns:
-            Group: the students group
-        """
-        student_group, _ = Group.objects.get_or_create(name="student")
-
-        models = [Absence, Grade]
-        content_types = [ContentType.objects.get_for_model(model) for model in models]
-        student_permissions = Permission.objects.filter(
-            content_type__in=content_types, codename__startswith="view_"
-        )
-
-        for permission in student_permissions:
-            if permission not in student_group.permissions.all():
-                student_group.permissions.add(permission)
-
-        return student_group
+    return student_group
 
 
-class FakeUserFactory:
-    """Service for creating users for testing"""
+def _make_fake_teacher_group() -> Group:
+    """Create or get the teachers group for tests
 
-    _users = get_user_model().objects
-    _groups = FakeGroupFactory()
+    Returns:
+        Group: the teachers group
+    """
+    teacher_group, _ = Group.objects.get_or_create(name="teacher")
 
-    def make_user(self, **user_data: Any) -> User:
-        """Creates and stores an user object
+    models = [Absence, Grade]
+    content_types = [ContentType.objects.get_for_model(model) for model in models]
+    teacher_permissions = Permission.objects.filter(content_type__in=content_types)
 
-        Args:
-            user_data (Dict[str, Any]): data needed for creating new users
+    for permission in teacher_permissions:
+        if permission not in teacher_group.permissions:
+            teacher_group.permissions.add(permission)
 
-        Raises:
-            InvalidUserException: raised when invalid data was passed for creating the
-            user
+    return teacher_group
 
-        Returns:
-            User: the user created
-        """
 
-        first_name = user_data.get("first_name", "")
-        last_name = user_data.get("last_name", "")
+def make_fake_student(password: str, **kwargs: object) -> User:
+    """Creates a student for testing
 
-        user_data["register"] = f"{first_name.lower()}-{generate_fake_register()}"
+    Args:
+        password (str): student password
 
-        first_name = self._validate_name(first_name)
-        last_name = self._validate_name(last_name)
+    Returns:
+        User: student created
+    """
+    student_group = _make_fake_student_group()
 
-        role = user_data.pop("role")
-        creation_method = self._get_creation_method(role)
+    first_name: str = kwargs.get("first_name", "")
+    kwargs["register"] = f"{first_name.lower()}-{generate_fake_register()}"
 
-        if creation_method:
-            return creation_method(
-                **user_data,
-            )
+    student: User = get_user_model().objects.create_user(password=password, **kwargs)
+    student.groups.add(student_group)
 
-        raise InvalidUserException(f"{role} is not a valid role")
+    student.save()
 
-    def _validate_name(self, name: str) -> str:
-        if not name:
-            raise InvalidUserException("The full name must be set")
+    return student
 
-        return name.capitalize()
 
-    def _get_creation_method(self, role: str) -> Callable[[Any], User]:
-        creation_method_dict = {
-            "student": self._make_student,
-            "teacher": self._make_teacher,
-            "staff": self._make_superuser,
-        }
-        creation_method = creation_method_dict.get(role)
+def make_fake_student(password: str, **kwargs: object) -> User:
+    """Creates a student for testing
 
-        if creation_method:
-            return creation_method
+    Args:
+        password (str): student password
 
-        raise InvalidUserException(f"{role} is not a valid role")
+    Returns:
+        User: student created
+    """
+    teacher_group = _make_fake_teacher_group()
 
-    def _make_teacher(self, password: str, **kwargs: Any) -> User:
-        teacher_group = self._groups.make_teacher_group()
+    first_name: str = kwargs.get("first_name", "")
+    kwargs["register"] = f"{first_name.lower()}-{generate_fake_register()}"
 
-        teacher = self._users.create_user(password, **kwargs)
-        teacher.groups.add(teacher_group)
+    teacher: User = get_user_model().objects.create_user(password=password, **kwargs)
+    teacher.groups.add(teacher_group)
 
-        teacher.save()
+    teacher.save()
 
-        return teacher
-
-    def _make_student(self, password: str, **kwargs: Any) -> User:
-        student_group = self._groups.make_student_group()
-
-        student = self._users.create_user(password, **kwargs)
-        student.groups.add(student_group)
-
-        student.save()
-
-        return student
-
-    def _make_superuser(self, password: str, **kwargs: Any) -> User:
-        return self._users.create_superuser(password=password, **kwargs)
+    return teacher
 
 
 def make_fake_classroom(member: User) -> ClassRoom:

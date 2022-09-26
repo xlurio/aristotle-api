@@ -80,13 +80,13 @@ class UserFactory:
             User: the user created
         """
 
-        user_data["register"] = generate_register()
-
         first_name = user_data.get("first_name", "")
         last_name = user_data.get("last_name", "")
 
         first_name = self._validate_name(first_name)
         last_name = self._validate_name(last_name)
+
+        user_data["register"] = f"{first_name.lower()}-{generate_register()}"
 
         role = user_data.pop("role")
         creation_method = self._get_creation_method(role)

@@ -1,7 +1,7 @@
 from datetime import date
 from django.test import TestCase
 from absence_register.services import AbsenceFactory
-from core.tests.helpers import FakeUserFactory, make_fake_classroom
+from core.tests.helpers import make_fake_classroom, make_fake_student
 from core.adapters import UserManager
 from core.models import Absence, ClassRoom
 from django.contrib.auth import get_user_model
@@ -22,9 +22,8 @@ class AbsenceFactoryTests(TestCase):
     def _given_absence_data(self) -> dict[str, object]:
         absence_date = date(year=2022, month=9, day=25)
 
-        user_factory = FakeUserFactory()
-        student = user_factory.make_user(
-            first_name="Sample", last_name="Student", password="12345", role="student"
+        student = make_fake_student(
+            first_name="Sample", last_name="Student", password="12345"
         )
 
         classroom = make_fake_classroom(student)

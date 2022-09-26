@@ -19,7 +19,7 @@ class AbsenceSerializer(serializers.ModelSerializer):
         """Absence serializer meta data"""
 
         model = models.Absence
-        fields = "__all__"
+        fields = ["absence_date", "classroom", "student"]
 
     def create(self, validated_data: Any) -> models.Absence:
         factory = AbsenceFactory()
