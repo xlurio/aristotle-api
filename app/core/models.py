@@ -43,8 +43,7 @@ class ClassRoom(models.Model):
     subject = models.CharField(_("subject"), max_length=256)
     name = models.CharField(_("name"), max_length=256)
     members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        verbose_name=_("members"),
+        settings.AUTH_USER_MODEL, verbose_name=_("members"), related_name="classrooms"
     )
     school_days = models.IntegerField(default=100)
     start = models.DateField(_("start"))
@@ -120,7 +119,6 @@ class StudentClassroom(models.Model):
 class TeacherClassroom(models.Model):
     """Model for reading teacher class room data"""
 
-    user_id = models.IntegerField(null=False)
     classroom_id = models.IntegerField(null=False)
     classroom = models.CharField(_("class room"), max_length=256)
 

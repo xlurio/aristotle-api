@@ -1,4 +1,5 @@
 from rest_framework import viewsets, authentication
+from core.models import ClassRoom
 from core.models import TeacherClassroom
 from teacher_consulting.api.serializers import TeacherClassroomSerializer
 from teacher_consulting.permissions import IsTeacher
@@ -12,4 +13,9 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsTeacher]
 
     def get_queryset(self) -> QuerySet[TeacherClassroom]:
-        return TeacherClassroom.objects.filter(user_id=self.request.user.id)
+        classrooms: QuerySet[ClassRoom] = ClassRoom.objects.filter(
+            members__id=self.request.user.id
+        )
+        classrooms_id: list[int] = [classroom.id for classroom in classrooms]
+
+        return TeacherClassroom.objects.filter(classroom_id__in=classrooms_id)

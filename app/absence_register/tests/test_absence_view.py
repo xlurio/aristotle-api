@@ -2,15 +2,15 @@ from datetime import date
 from typing import Any
 from django.test import TestCase
 from rest_framework.test import APIClient
-from app.core.tests.helpers import make_fake_student, make_fake_teacher
-from core.tests.helpers import make_fake_classroom
+from core.tests.helpers import make_fake_classroom, make_fake_student, make_fake_teacher
 from django.urls import reverse
+from rest_framework import status
 
 
-absence_register_path = reverse("absence-list")
+absence_register_path = reverse("absences:absence-list")
 
 
-class PrivateAbsenceViewTests:
+class PrivateAbsenceViewTests(TestCase):
     """Tests for the absence end point private operations"""
 
     def setUp(self):
@@ -24,7 +24,7 @@ class PrivateAbsenceViewTests:
         """Test registering a absence"""
         arrangement = self._given_request()
         result = self._when_requested(arrangement)
-        self._then_should_register_absence(result)
+        self._then_should_register_absence(arrangement, result)
 
     def _given_request(self) -> dict[str, object]:
         absence_date = date(year=2022, month=9, day=26)
@@ -33,12 +33,25 @@ class PrivateAbsenceViewTests:
 
         return {
             "absence_date": absence_date,
-            "classroom": [classroom.id],
-            "student": [student.id],
+            "classroom": classroom.id,
+            "student": student.id,
         }
 
     def _when_requested(self, arrangement: dict[str, object]) -> Any:
         return self._client.post(absence_register_path, arrangement)
 
-    def _then_should_register_absence(self, result: Any) -> None:
-        pass
+    def _then_should_register_absence(
+        self, arrangement: dict[str, object], result: Any
+    ) -> None:
+        expected_status_code = status.HTTP_201_CREATED
+        actual_status_code = result.status_code
+
+        expected_content = {
+            "absence_date": str(arrangement["absence_date"]),
+            "classroom": arrangement["classroom"],
+            "student": arrangement["student"],
+        }
+        actual_content = result.data
+
+        self.assertEqual(expected_status_code, actual_status_code)
+        self.assertEqual(expected_content, actual_content)

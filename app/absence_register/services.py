@@ -6,12 +6,15 @@ from core.models import (
     ClassRoom,
     ClassroomAbsence,
     ClassroomStudent,
+    TeacherClassroom,
     StudentClassroom,
     User,
 )
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from absence_register.exceptions import InvalidAbsenceException
 from datetime import date
+from django.db.models.query import QuerySet
+from django.contrib.auth import get_user_model
 
 
 class AbsenceFactory:
@@ -47,9 +50,11 @@ class AbsenceFactory:
         return self._absences.create(**absence_data)
 
     def _check_student(self, user_to_check: User) -> None:
-        user_groups: ManyToManyDescriptor = user_to_check.groups
+        user_group: QuerySet[Group] = user_to_check.groups.filter(
+            name=self.STUDENT_GROUP.name
+        )
 
-        if self.STUDENT_GROUP not in user_groups.all():
+        if not user_group:
             raise InvalidAbsenceException("Invalid student")
 
     def _is_student_in_class(self, student: User, classroom: ClassRoom) -> None:
@@ -135,25 +140,42 @@ class ReadOnlyAbsenceFactory:
             return student_classroom
 
     def _get_classroom_student(self) -> ClassroomStudent:
-        user_id: int = self._absence.student.id
-        classroom_id: int = self._absence.student.id
+        classroom: TeacherClassroom = self._get_teacher_classroom()
 
         try:
-            return self._classroom_students.get(
-                user_id=user_id,
-                classroom_id=classroom_id,
-            )
+            return self._classroom_students.get(classroom__id=classroom.id)
 
         except ObjectDoesNotExist:
-            classroom: str = self._absence.classroom.name
+            student: str = self._absence.student.full_name
+
             classroom_student: ClassroomStudent = self._classroom_students.create(
-                user_id=user_id,
-                classroom_id=classroom_id,
-                classroom=classroom,
+                student=student, classroom=classroom
             )
             classroom_student.save()
 
             return classroom_student
+
+    def _get_teacher_classroom(self) -> TeacherClassroom:
+        classroom: ClassRoom = self._absence.classroom
+
+        try:
+            return TeacherClassroom.objects.get(classroom_id=classroom.id)
+
+        except ObjectDoesNotExist:
+            teacher_classroom = TeacherClassroom.objects.create(
+                classroom_id=classroom.id, classroom=classroom.name
+            )
+            teacher_classroom.save()
+
+            return teacher_classroom
+
+    def _get_classroom_teachers(self) -> QuerySet[User]:
+        classroom: ClassRoom = self._absence.classroom
+        classroom_members: QuerySet[User] = get_user_model().objects.filter(
+            classrooms__id=classroom.id
+        )
+
+        return classroom_members.filter(classrooms__members__groups__name="teacher")
 
     def _get_absence_amount(self, classroom_absence: ClassroomAbsence) -> int:
         absence_amount: int = classroom_absence.absence_amount

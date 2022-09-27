@@ -52,7 +52,7 @@ def _make_fake_teacher_group() -> Group:
     teacher_permissions = Permission.objects.filter(content_type__in=content_types)
 
     for permission in teacher_permissions:
-        if permission not in teacher_group.permissions:
+        if permission not in teacher_group.permissions.all():
             teacher_group.permissions.add(permission)
 
     return teacher_group
