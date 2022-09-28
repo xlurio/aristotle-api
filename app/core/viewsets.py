@@ -1,8 +1,9 @@
 from django.utils.decorators import method_decorator
-from rest_framework import mixins, viewsets
-from core.constants import TimeMeasure
-from django.views.decorators.vary import vary_on_headers
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+from rest_framework import mixins, viewsets
+
+from core.constants import TimeMeasure
 
 
 class WriteOnlyViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):

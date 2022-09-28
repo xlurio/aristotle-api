@@ -116,7 +116,7 @@ def get_database_settings() -> dict[str, str]:
                 "engine": "django.db.backends.mysql",
                 "NAME": os.environ.get("DATABASE_NAME"),
                 "USER": os.environ.get("DATABASE_USER"),
-                "PASSWORD": os.environ.get("PASSWORD"),
+                "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
                 "HOST": os.environ.get("DATABASE_HOST"),
                 "PORT": os.environ.get("DATABASE_PORT"),
             }
@@ -203,7 +203,8 @@ def get_cache_settings() -> dict[str, str]:
             "default": {
                 "BACKEND": "django.core.cache.backends.redis.RedisCache",
                 "LOCATION": (
-                    f"redis://{os.environ.get('CACHE_BACKEND_HOST')}:{os.environ.get('CACHE_BACKEND_PORT')}"
+                    f"redis://{os.environ.get('CACHE_BACKEND_HOST')}:"
+                    "{os.environ.get('CACHE_BACKEND_PORT')}"
                 ),
             }
         }
