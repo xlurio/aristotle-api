@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:latest
+  restart: always
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: redis:latest
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:app
+    depends_on:
+      - redit
+      - db
