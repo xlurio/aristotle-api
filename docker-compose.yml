@@ -4,11 +4,11 @@ services:
     restart: always
     ports:
       - "3306:3306"
+    expose:
+      - 3306
     environment:
       MYSQL_ROOT_PASSWORD: 'password'
       MYSQL_DATABASE: 'app_db'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
 
   redis:
     image: redis:latest
@@ -17,7 +17,8 @@ services:
 
   app:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    restart: on-failure
+    command: sh -c "ping -w20 db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     volumes:
@@ -28,7 +29,7 @@ services:
     environment:
       APP_ENVIRONMENT: "production"
       DATABASE_NAME: "app_db"
-      DATABASE_USER: "user"
+      DATABASE_USER: "root"
       DATABASE_PASSWORD: "password"
       DATABASE_HOST: "db"
       DATABASE_PORT: 3306
