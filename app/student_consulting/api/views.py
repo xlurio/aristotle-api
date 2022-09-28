@@ -1,12 +1,13 @@
 from django.db.models.query import QuerySet
-from rest_framework import authentication, viewsets
+from rest_framework import authentication
 
 from core.models import StudentClassroom
+from core.viewsets import ReadOnlyViewSet
 from student_consulting.api.serializers import StudentClassroomSerializer
 from student_consulting.permissions import IsStudent
 
 
-class StudentViewSet(viewsets.ReadOnlyModelViewSet):
+class StudentViewSet(ReadOnlyViewSet):
     """Student data view"""
 
     authentication_classes = [authentication.TokenAuthentication]

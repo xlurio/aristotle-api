@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+PRODUCTION_ENVIRONMENT = "production"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,6 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
+
+def get_security_key() -> dict[str, str]:
+    """Return the settings to database based on the running environment
+
+    Returns:
+        dict[str, str]: the database settings
+    """
+    environment = os.environ.get("APP_ENVIRONMENT")
+
+    if environment == PRODUCTION_ENVIRONMENT:
+        return os.environ.get("DJANGO_SECRET_KEY")
+
+    return "django-insecure-c#kf9*52rq%yod6vxm-2@hlf^fy#@1vly_&+p^otr$z#+-4y4*"
+
+
 SECRET_KEY = "django-insecure-c#kf9*52rq%yod6vxm-2@hlf^fy#@1vly_&+p^otr$z#+-4y4*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -83,6 +101,26 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+def get_database_settings() -> dict[str, str]:
+    """Return the settings to database based on the running environment
+
+    Returns:
+        dict[str, str]: the database settings
+    """
+    environment = os.environ.get("APP_ENVIRONMENT")
+
+    if environment == PRODUCTION_ENVIRONMENT:
+        return {"default": {"engine": "django.db.backends."}}
+
+    return {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -142,11 +180,30 @@ AUTH_USER_MODEL = "core.User"
 
 # Caching
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.backends.redis.RedisCache",
-        "LOCATION": (
-            f"redis://{os.environ.get('REDIT_HOST')}:{os.environ.get('REDIS_PORT')}"
-        ),
+
+def get_cache_settings() -> dict[str, str]:
+    """Return the settings to cache based on the running environment
+
+    Returns:
+        dict[str, str]: the cache settings
+    """
+    environment = os.environ.get("APP_ENVIRONMENT")
+
+    if environment == PRODUCTION_ENVIRONMENT:
+        return {
+            "default": {
+                "BACKEND": "django.core.cache.backends.redis.RedisCache",
+                "LOCATION": (
+                    f"redis://{os.environ.get('CACHE_BACKEND_HOST')}:{os.environ.get('CACHE_BACKEND_PORT')}"
+                ),
+            }
+        }
+
+    return {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
-}
+
+
+CACHES = get_cache_settings()
