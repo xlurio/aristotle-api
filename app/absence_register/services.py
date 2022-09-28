@@ -1,11 +1,12 @@
 from datetime import date
+from sys import stdout
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.query import QuerySet
-
+from django.db.utils import ProgrammingError
 from absence_register.exceptions import InvalidAbsenceException
 from core.models import (
     Absence,
@@ -20,7 +21,7 @@ from core.models import (
 
 
 class AbsenceFactory:
-    STUDENT_GROUP, _ = Group.objects.get_or_create(name="student")
+    STUDENT_GROUP = "student"
     _absences = Absence.objects
 
     def make_absence(self, **absence_data) -> Absence:
@@ -41,7 +42,11 @@ class AbsenceFactory:
 
         self._check_student(student)
 
-        classroom: ClassRoom | None = absence_data.get("classroom")
+        try:
+            classroom: ClassRoom | None = absence_data.get("classroom")
+        
+        except ProgrammingError:
+            stdout.write("Not able to load auth_group table")
 
         if not classroom:
             raise InvalidAbsenceException("A class room must be set")
@@ -53,7 +58,7 @@ class AbsenceFactory:
 
     def _check_student(self, user_to_check: User) -> None:
         user_group: QuerySet[Group] = user_to_check.groups.filter(
-            name=self.STUDENT_GROUP.name
+            name=self.STUDENT_GROUP
         )
 
         if not user_group:

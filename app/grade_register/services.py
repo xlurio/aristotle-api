@@ -1,6 +1,7 @@
+from sys import stdout
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db.utils import ProgrammingError
 from core.models import (
     ClassRoom,
     ClassroomGrade,
@@ -17,7 +18,7 @@ from grade_register.exceptions import InvalidGradeException
 class GradeFactory:
     """Factory for creating new grade objects"""
 
-    STUDENT_GROUP, _ = Group.objects.get_or_create(name="student")
+    STUDENT_GROUP = "student"
     _grades = Grade.objects
 
     def make_grade(self, **grade_data) -> Grade:
@@ -40,7 +41,10 @@ class GradeFactory:
         if not student:
             raise InvalidGradeException("A student must be set")
 
-        self._check_student(student)
+        try:
+            self._check_student(student)
+        except ProgrammingError:
+            stdout.write("Not able to load auth_group table")
 
         classroom = grade_data.get("classroom")
 
@@ -68,7 +72,7 @@ class GradeFactory:
             raise InvalidGradeException("Grades must be between 0 and 100")
 
     def _check_student(self, user_to_check: User) -> None:
-        user_groups = user_to_check.groups.filter(name=self.STUDENT_GROUP.name)
+        user_groups = user_to_check.groups.filter(name=self.STUDENT_GROUP)
 
         if not user_groups:
             raise InvalidGradeException("Invalid student")
