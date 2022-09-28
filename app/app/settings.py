@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,6 +136,17 @@ MEDIA_URL = "media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Django Auth
+# Authentication
 
 AUTH_USER_MODEL = "core.User"
+
+# Caching
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.backends.redis.RedisCache",
+        "LOCATION": (
+            f"redis://{os.environ.get('REDIT_HOST')}:{os.environ.get('REDIS_PORT')}"
+        ),
+    }
+}
