@@ -25,11 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 
 
-def get_security_key() -> dict[str, str]:
-    """Return the settings to database based on the running environment
+def get_secret_key() -> str:
+    """Return the secret key based on the running environment
 
     Returns:
-        dict[str, str]: the database settings
+        str: the secret key
     """
     environment = os.environ.get("APP_ENVIRONMENT")
 
@@ -39,12 +39,41 @@ def get_security_key() -> dict[str, str]:
     return "django-insecure-c#kf9*52rq%yod6vxm-2@hlf^fy#@1vly_&+p^otr$z#+-4y4*"
 
 
-SECRET_KEY = "django-insecure-c#kf9*52rq%yod6vxm-2@hlf^fy#@1vly_&+p^otr$z#+-4y4*"
+SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def get_debug_settings() -> str:
+    """Return the debug settings based on the running environment
 
-ALLOWED_HOSTS = []
+    Returns:
+        str: the debug settings
+    """
+    environment = os.environ.get("APP_ENVIRONMENT")
+
+    if environment == PRODUCTION_ENVIRONMENT:
+        return False
+
+    return True
+
+
+DEBUG = get_debug_settings()
+
+
+def get_allowed_hosts_settings() -> list[str]:
+    """Return the allowed hosts settings based on the running environment
+
+    Returns:
+        str: the allowed hosts settings
+    """
+    environment = os.environ.get("APP_ENVIRONMENT")
+
+    if environment == PRODUCTION_ENVIRONMENT:
+        return ["localhost", "127.0.0.1"]
+
+    return []
+
+
+ALLOWED_HOSTS = get_allowed_hosts_settings()
 
 
 # Application definition
@@ -113,7 +142,7 @@ def get_database_settings() -> dict[str, str]:
     if environment == PRODUCTION_ENVIRONMENT:
         return {
             "default": {
-                "engine": "django.db.backends.mysql",
+                "ENGINE": "django.db.backends.mysql",
                 "NAME": os.environ.get("DATABASE_NAME"),
                 "USER": os.environ.get("DATABASE_USER"),
                 "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
@@ -130,12 +159,7 @@ def get_database_settings() -> dict[str, str]:
     }
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = get_database_settings()
 
 
 # Password validation

@@ -2,6 +2,8 @@ services:
   db:
     image: mysql:latest
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 'password'
       MYSQL_DATABASE: 'app_db'
@@ -15,7 +17,7 @@ services:
 
   app:
     build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     volumes:
