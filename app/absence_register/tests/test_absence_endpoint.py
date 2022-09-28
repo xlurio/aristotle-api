@@ -1,16 +1,17 @@
 from datetime import date
 from typing import Any
+
 from django.test import TestCase
-from rest_framework.test import APIClient
-from core.tests.helpers import make_fake_classroom, make_fake_student, make_fake_teacher
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
+
+from core.tests.helpers import make_fake_classroom, make_fake_student, make_fake_teacher
+
+ABSENCE_REGISTER_URL = reverse("absences:absence-list")
 
 
-absence_register_path = reverse("absences:absence-list")
-
-
-class PrivateAbsenceViewTests(TestCase):
+class PrivateAbsenceEndpointTests(TestCase):
     """Tests for the absence end point private operations"""
 
     def setUp(self):
@@ -38,7 +39,7 @@ class PrivateAbsenceViewTests(TestCase):
         }
 
     def _when_requested(self, arrangement: dict[str, object]) -> Any:
-        return self._client.post(absence_register_path, arrangement)
+        return self._client.post(ABSENCE_REGISTER_URL, arrangement)
 
     def _then_should_register_absence(
         self, arrangement: dict[str, object], result: Any

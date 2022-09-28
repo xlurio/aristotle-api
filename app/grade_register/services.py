@@ -1,16 +1,16 @@
-from datetime import date
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
+
 from core.models import (
     ClassRoom,
+    ClassroomGrade,
     ClassroomStudent,
     Grade,
     GradeDetail,
-    ClassroomGrade,
     StudentClassroom,
+    TeacherClassroom,
     User,
 )
-from django.contrib.auth.models import Group
-from django.db.models.query import QuerySet
-from django.core.exceptions import ObjectDoesNotExist
 from grade_register.exceptions import InvalidGradeException
 
 
@@ -57,10 +57,10 @@ class GradeFactory:
         is_title_empty = title_length < 1
 
         if is_title_empty:
-            raise InvalidGradeException(f"A title must be set")
+            raise InvalidGradeException("A title must be set")
 
     def _check_grade(self, grade: int) -> None:
-        is_positive = grade >= 0
+        is_positive: bool = grade >= 0
         is_lower_or_equal_to_10 = grade <= 100
         is_grade_valid = is_positive and is_lower_or_equal_to_10
 
@@ -68,15 +68,15 @@ class GradeFactory:
             raise InvalidGradeException("Grades must be between 0 and 100")
 
     def _check_student(self, user_to_check: User) -> None:
-        user_groups = user_to_check.groups
+        user_groups = user_to_check.groups.filter(name=self.STUDENT_GROUP.name)
 
-        if self.STUDENT_GROUP not in user_groups:
+        if not user_groups:
             raise InvalidGradeException("Invalid student")
 
     def _is_student_in_class(self, student: User, classroom: ClassRoom) -> None:
-        class_members = classroom.members
+        class_members = classroom.members.filter(id=student.id)
 
-        if student not in class_members:
+        if not class_members:
             raise InvalidGradeException(f"Student {student} not in class {classroom}")
 
     def _check_classroom_status(self, classroom: ClassRoom) -> None:
@@ -108,14 +108,14 @@ class ReadOnlyGradeFactory:
         average = self._get_average(classroom_grade)
         setattr(classroom_grade, "average", average)
 
-        return grade_details
+        return classroom_grade
 
     def _get_classroom_grade(self) -> ClassroomGrade:
         student_classroom = self._get_student_classroom()
         classroom_student = self._get_classroom_student()
 
         try:
-            return self._classroom_absences.get(
+            return self._classroom_grades.get(
                 classroom__id=student_classroom.id,
                 student__id=classroom_student.id,
             )
@@ -152,32 +152,41 @@ class ReadOnlyGradeFactory:
             return student_classroom
 
     def _get_classroom_student(self) -> ClassroomStudent:
-        user_id: int = self._grade.student.id
-        classroom_id: int = self._grade.student.id
+        classroom: TeacherClassroom = self._get_teacher_classroom()
 
         try:
-            return self._classroom_students.get(
-                user_id=user_id,
-                classroom_id=classroom_id,
-            )
+            return self._classroom_students.get(classroom__id=classroom.id)
 
         except ObjectDoesNotExist:
-            classroom: str = self._grade.classroom.name
+            student: str = self._grade.student.full_name
+
             classroom_student: ClassroomStudent = self._classroom_students.create(
-                user_id=user_id,
-                classroom_id=classroom_id,
-                classroom=classroom,
+                student=student, classroom=classroom
             )
             classroom_student.save()
 
             return classroom_student
 
-    def _get_average(self, grade: ClassroomGrade) -> float:
-        grades: list[int] = grade.grade_values
-        grades_sum: int
+    def _get_teacher_classroom(self) -> TeacherClassroom:
+        classroom: ClassRoom = self._grade.classroom
 
-        for grade_value in grades:
-            grades_sum += grade_value
+        try:
+            return TeacherClassroom.objects.get(classroom_id=classroom.id)
+
+        except ObjectDoesNotExist:
+            teacher_classroom = TeacherClassroom.objects.create(
+                classroom_id=classroom.id, classroom=classroom.name
+            )
+            teacher_classroom.save()
+
+            return teacher_classroom
+
+    def _get_average(self, grade: ClassroomGrade) -> float:
+        grades: list[int] = grade.grade_values.all()
+        grades_sum: int = 0
+
+        for grade_detail in grades:
+            grades_sum += grade_detail.grade_value
 
         number_of_grades = len(grades)
 

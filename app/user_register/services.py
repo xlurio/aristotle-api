@@ -1,10 +1,12 @@
-from typing import Any, Callable
 import uuid
-from core.models import Absence, Grade, User
-from user_register.exceptions import InvalidUserException
+from typing import Any, Callable
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+
+from core.models import Absence, Grade, User
+from user_register.exceptions import InvalidUserException
 
 
 def generate_register() -> str:
@@ -34,7 +36,7 @@ class GroupFactory:
         teacher_permissions = Permission.objects.filter(content_type__in=content_types)
 
         for permission in teacher_permissions:
-            if permission not in teacher_group.permissions:
+            if permission not in teacher_group.permissions.all():
                 teacher_group.permissions.add(permission)
 
         return teacher_group
@@ -54,7 +56,7 @@ class GroupFactory:
         )
 
         for permission in student_permissions:
-            if permission not in student_group.permissions:
+            if permission not in student_group.permissions.all():
                 student_group.permissions.add(permission)
 
         return student_group

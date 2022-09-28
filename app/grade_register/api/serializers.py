@@ -1,11 +1,14 @@
 from typing import Any
+
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
+
 from core import models
 from grade_register.services import GradeFactory, ReadOnlyGradeFactory
-from django.contrib.auth import get_user_model
 
 
 class GradeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
     student = serializers.PrimaryKeyRelatedField(
         queryset=get_user_model().objects.all()
     )
@@ -15,7 +18,7 @@ class GradeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Grade
-        fields = "__all__"
+        fields = ["id", "title", "grade", "student", "classroom"]
 
     def create(self, validated_data: Any) -> models.Grade:
         factory = GradeFactory()

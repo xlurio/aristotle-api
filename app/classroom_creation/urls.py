@@ -1,5 +1,5 @@
-from core.routers import WriteOnlyRouter
 from classroom_creation.api.views import ClassRoomViewSet
+from core.routers import WriteOnlyRouter
 
 router = WriteOnlyRouter()
 router.register("classrooms", ClassRoomViewSet, "classroom")

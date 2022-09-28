@@ -1,8 +1,9 @@
+import uuid
 from datetime import date
 from typing import Any
-import uuid
-from core.models import ClassRoom
+
 from classroom_creation.exceptions import InvalidClassRoomException
+from core.models import ClassRoom
 
 
 class ClassRoomFactory:
@@ -32,7 +33,15 @@ class ClassRoomFactory:
 
         self._check_start_and_deadline(start, deadline)
 
-        return self._classrooms.create(name=name, subject=subject, **classroom_data)
+        members = classroom_data.pop("members", [])
+
+        new_classroom: ClassRoom = self._classrooms.create(
+            name=name, subject=subject, **classroom_data
+        )
+
+        new_classroom.members.add(*members)
+
+        return new_classroom
 
     def _check_start_and_deadline(self, start: date, deadline: date):
         if start > deadline:

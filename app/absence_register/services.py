@@ -1,20 +1,22 @@
+from datetime import date
+
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.fields.related_descriptors import ManyToManyDescriptor
+from django.db.models.query import QuerySet
+
+from absence_register.exceptions import InvalidAbsenceException
 from core.models import (
     Absence,
     AbsenceDetail,
     ClassRoom,
     ClassroomAbsence,
     ClassroomStudent,
-    TeacherClassroom,
     StudentClassroom,
+    TeacherClassroom,
     User,
 )
-from django.db.models.fields.related_descriptors import ManyToManyDescriptor
-from absence_register.exceptions import InvalidAbsenceException
-from datetime import date
-from django.db.models.query import QuerySet
-from django.contrib.auth import get_user_model
 
 
 class AbsenceFactory:

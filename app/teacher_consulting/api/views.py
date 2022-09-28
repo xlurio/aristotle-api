@@ -1,9 +1,9 @@
-from rest_framework import viewsets, authentication
-from core.models import ClassRoom
-from core.models import TeacherClassroom
+from django.db.models import QuerySet
+from rest_framework import authentication, viewsets
+
+from core.models import ClassRoom, TeacherClassroom
 from teacher_consulting.api.serializers import TeacherClassroomSerializer
 from teacher_consulting.permissions import IsTeacher
-from django.db.models import QuerySet
 
 
 class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
@@ -18,4 +18,8 @@ class TeacherViewSet(viewsets.ReadOnlyModelViewSet):
         )
         classrooms_id: list[int] = [classroom.id for classroom in classrooms]
 
-        return TeacherClassroom.objects.filter(classroom_id__in=classrooms_id)
+        teacher_classrooms: QuerySet[
+            TeacherClassroom
+        ] = TeacherClassroom.objects.filter(classroom_id__in=classrooms_id)
+
+        return teacher_classrooms.order_by("id")

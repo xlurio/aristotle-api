@@ -1,8 +1,10 @@
 from typing import Any
-from rest_framework import serializers
-from core import models
-from absence_register.services import AbsenceFactory, ReadOnlyAbsenceFactory
+
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+from absence_register.services import AbsenceFactory, ReadOnlyAbsenceFactory
+from core import models
 
 
 class AbsenceSerializer(serializers.ModelSerializer):

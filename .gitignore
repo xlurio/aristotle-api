@@ -131,9 +131,5 @@ dmypy.json
 # Text Editor
 .vscode/
 
-# Django
-migrations/
-
 # Development tools
-
 *.ps1

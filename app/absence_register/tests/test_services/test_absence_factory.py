@@ -1,10 +1,12 @@
 from datetime import date
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+
 from absence_register.services import AbsenceFactory
-from core.tests.helpers import make_fake_classroom, make_fake_student
 from core.adapters import UserManager
 from core.models import Absence, ClassRoom
-from django.contrib.auth import get_user_model
+from core.tests.helpers import make_fake_classroom, make_fake_student
 
 
 class AbsenceFactoryTests(TestCase):
@@ -42,7 +44,6 @@ class AbsenceFactoryTests(TestCase):
         return new_absence
 
     def _then_should_create_absence(self, result: Absence) -> None:
-        expected_result = Absence.objects.get(id=result.id)
+        expected_result: Absence = Absence.objects.get(id=result.id)
 
-        self.assertTrue(isinstance(result, Absence))
-        self.assertEqual(expected_result.id, result.id)
+        self.assertEqual(expected_result.absence_date, result.absence_date)

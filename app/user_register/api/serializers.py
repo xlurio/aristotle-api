@@ -1,8 +1,10 @@
 from typing import Any, Dict
-from user_register.services import UserFactory
-from core.models import User
-from rest_framework import serializers
+
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+from core.models import User
+from user_register.services import UserFactory
 
 
 class UserSerializer(serializers.ModelSerializer):
