@@ -241,3 +241,10 @@ def get_cache_settings() -> dict[str, str]:
 
 
 CACHES = get_cache_settings()
+
+# Security
+
+SECURE_HSTS_SECONDS = 259200
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
