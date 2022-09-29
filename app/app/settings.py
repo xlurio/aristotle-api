@@ -228,7 +228,7 @@ def get_cache_settings() -> dict[str, str]:
                 "BACKEND": "django.core.cache.backends.redis.RedisCache",
                 "LOCATION": (
                     f"redis://{os.environ.get('CACHE_BACKEND_HOST')}:"
-                    "{os.environ.get('CACHE_BACKEND_PORT')}"
+                    f"{os.environ.get('CACHE_BACKEND_PORT')}"
                 ),
             }
         }

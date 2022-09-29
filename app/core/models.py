@@ -14,9 +14,9 @@ from core import adapters
 class User(AbstractBaseUser, PermissionsMixin):
     """Model for storing user data"""
 
-    register = models.CharField(_("registration number"), max_length=256, unique=True)
-    first_name = models.CharField(_("first name"), max_length=256)
-    last_name = models.CharField(_("last name"), max_length=256)
+    register = models.CharField(_("registration number"), max_length=255, unique=True)
+    first_name = models.CharField(_("first name"), max_length=255)
+    last_name = models.CharField(_("last name"), max_length=255)
 
     date_joined = models.DateField(_("date joined"), default=timezone.now)
     is_active = models.BooleanField(_("active"), default=True)
@@ -43,8 +43,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 class ClassRoom(models.Model):
     """Model for storing class room data"""
 
-    subject = models.CharField(_("subject"), max_length=256)
-    name = models.CharField(_("name"), max_length=256)
+    subject = models.CharField(_("subject"), max_length=255)
+    name = models.CharField(_("name"), max_length=255)
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL, verbose_name=_("members"), related_name="classrooms"
     )
@@ -70,7 +70,7 @@ class ClassRoom(models.Model):
 class Grade(models.Model):
     """Model for storing grades"""
 
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=255)
     grade = models.IntegerField(_("grade"))
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -116,20 +116,20 @@ class StudentClassroom(models.Model):
 
     user_id = models.IntegerField(null=False)
     classroom_id = models.IntegerField(null=False)
-    student = models.CharField(_("student"), max_length=256)
+    student = models.CharField(_("student"), max_length=255)
 
 
 class TeacherClassroom(models.Model):
     """Model for reading teacher class room data"""
 
     classroom_id = models.IntegerField(null=False)
-    classroom = models.CharField(_("class room"), max_length=256)
+    classroom = models.CharField(_("class room"), max_length=255)
 
 
 class ClassroomStudent(models.Model):
     """Model for reading class room student data"""
 
-    student = models.CharField(_("student"), max_length=256)
+    student = models.CharField(_("student"), max_length=255)
     classroom = models.ForeignKey(
         TeacherClassroom, on_delete=models.CASCADE, related_name="students"
     )
@@ -138,7 +138,7 @@ class ClassroomStudent(models.Model):
 class ClassroomGrade(models.Model):
     """Model for reading grade data"""
 
-    average = models.FloatField(_("average"), max_length=256, default=0.0)
+    average = models.FloatField(_("average"), max_length=255, default=0.0)
     classroom = models.ForeignKey(
         StudentClassroom,
         on_delete=models.CASCADE,
@@ -152,7 +152,7 @@ class ClassroomGrade(models.Model):
 class GradeDetail(models.Model):
     """Model for reading grade details"""
 
-    title = models.CharField(_("title"), max_length=256)
+    title = models.CharField(_("title"), max_length=255)
     grade_value = models.IntegerField(_("grade value"))
     classroom_grade = models.ForeignKey(
         ClassroomGrade,
