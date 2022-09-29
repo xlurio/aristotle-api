@@ -1,4 +1,4 @@
-# AristotleAPI
+<h1 align="center">AristotleAPI</h1>
 
 <p align="center">
   <a href="https://codecov.io/gh/xlurio/aristotle-api" > 
