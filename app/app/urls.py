@@ -1,6 +1,6 @@
 from django.urls import include, path
-from rest_framework.authtoken import views
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from rest_framework.authtoken import views
 
 urlpatterns = [
     path("token/", views.obtain_auth_token, name="token"),
