@@ -35,3 +35,25 @@ Registration number: staff
 Password:
 ```
 
+Where `staff` is the chosen username. Now you'll need to create an authentication token for the staff user by using the following request:
+
+```
+POST /token HTTP/1.1
+content-type: application/json
+
+{
+  "register": "staff",
+  "password": "password"
+}
+```
+
+If it works, you should receive the following response:
+
+```
+{
+  "token": "12312h1j1nknwkqnkd1k12h13b21jb"
+}
+```
+
+This token will be added to the `Authorization` header for creating the teachers, students and class rooms.
+
