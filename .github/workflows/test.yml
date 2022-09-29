@@ -46,4 +46,4 @@ jobs:
 
       - name: Security
         run: |
-          docker-compose run app sh -c "python manage.py check --deploy"
+          docker-compose run app sh -c "python manage.py check --deploy --fail-level=WARNING"
