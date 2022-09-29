@@ -244,7 +244,10 @@ CACHES = get_cache_settings()
 
 # Security
 
-SECURE_HSTS_SECONDS = 259200
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+is_deploy = os.environ.get("is_deploy", 0)
+
+if is_deploy == 1:
+    SECURE_HSTS_SECONDS = 259200
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

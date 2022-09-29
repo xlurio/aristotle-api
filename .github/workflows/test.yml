@@ -43,7 +43,3 @@ jobs:
           docker-compose up -d db
           docker-compose run app sh -c "ping -w20 db"
           docker-compose run app sh -c "python manage.py migrate && python manage.py test"
-
-      - name: Security
-        run: |
-          docker-compose run app sh -c "python manage.py check --deploy --fail-level=WARNING"
