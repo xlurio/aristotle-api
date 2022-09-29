@@ -41,7 +41,7 @@ def get_secret_key() -> str:
 
 SECRET_KEY = get_secret_key()
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 def get_debug_settings() -> str:
     """Return the debug settings based on the running environment
 
