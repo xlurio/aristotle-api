@@ -12,7 +12,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     role_choices = (("student", "Student"), ("teacher", "Teacher"), ("staff", "Staff"))
 
-    register = serializers.CharField(default="", style={"input_type": "hidden"})
+    id = serializers.ReadOnlyField()
+
+    register = serializers.ReadOnlyField()
 
     password = serializers.CharField(
         required=True,
@@ -30,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         """User serializer meta data"""
 
         model = get_user_model()
-        fields = ["register", "first_name", "last_name", "password", "role"]
+        fields = ["id", "register", "first_name", "last_name", "password", "role"]
 
     def create(self, validated_data: Dict[str, Any]) -> User:
         """Creates a new user and return it
