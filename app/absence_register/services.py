@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields.related_descriptors import ManyToManyDescriptor
 from django.db.models.query import QuerySet
 from django.db.utils import ProgrammingError
+
 from absence_register.exceptions import InvalidAbsenceException
 from core.models import (
     Absence,
@@ -44,7 +45,7 @@ class AbsenceFactory:
 
         try:
             classroom: ClassRoom | None = absence_data.get("classroom")
-        
+
         except ProgrammingError:
             stdout.write("Not able to load auth_group table")
 

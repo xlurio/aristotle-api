@@ -5,50 +5,43 @@ name: Test
 
 on:
   push:
-    branches: [ "main", "feature/*", "bugfix/*", "hotfix/*" ]
+    branches: ["main", "feature/*", "bugfix/*", "hotfix/*"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-        
-    - name: setup-docker
-      uses: docker-practice/actions-setup-docker@1.0.11
-      
-    - name: Install dependencies
-      run: |
-        docker-compose build
-        python -m pip install --upgrade pip
-        pip install autoflake flake8 isort black
-        
-    - name: Format
-      run: |
-        autoflake ./app --remove-all-unused-imports --recursive --remove-unused-variables --in-place --exclude=__init__.py
-        black ./app
-        isort .
-    
-    - name: Lint
-      run: |
-        flake8 ./app
-        isort . --check --diff
-        black ./app --check
-    - name: Test
-      run: |
-        docker-compose run app sh -c "python manage.py test"
-      
-    - name: Security
-      run: |
-        docker-compose run app sh -c "python manage.py check --deploy"
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: setup-docker
+        uses: docker-practice/actions-setup-docker@1.0.11
+
+      - name: Install dependencies
+        run: |
+          docker-compose build
+          python -m pip install --upgrade pip
+          pip install flake8 isort black
+
+      - name: Lint
+        run: |
+          flake8 ./app
+          isort . --check --diff
+          black ./app --check
+      - name: Test
+        run: |
+          docker-compose run app sh -c "python manage.py test"
+
+      - name: Security
+        run: |
+          docker-compose run app sh -c "python manage.py check --deploy"

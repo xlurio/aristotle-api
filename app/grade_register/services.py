@@ -1,7 +1,8 @@
 from sys import stdout
-from django.contrib.auth.models import Group
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import ProgrammingError
+
 from core.models import (
     ClassRoom,
     ClassroomGrade,
