@@ -32,6 +32,6 @@ services:
       DATABASE_PASSWORD: "password"
       DATABASE_HOST: "db"
       DATABASE_PORT: 3306
-      CACHE_BACKEND_HOST: "localhost"
+      CACHE_BACKEND_HOST: "redis"
       CACHE_BACKEND_PORT: 6379
       DJANGO_SECRET_KEY: "django-insecure-c#kf9*52rq%yod6vxm-2@hlf^fy#@1vly_&+p^otr$z#+-4y4*"
