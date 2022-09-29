@@ -244,7 +244,7 @@ CACHES = get_cache_settings()
 
 # Security
 
-is_deploy = os.environ.get("is_deploy", 0)
+is_deploy = os.environ.get("IS_DEPLOY", 0)
 
 if is_deploy == 1:
     SECURE_HSTS_SECONDS = 259200
