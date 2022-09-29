@@ -1,10 +1,8 @@
-from django.contrib import admin
 from django.urls import include, path
 from rest_framework.authtoken import views
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api-auth/", include("rest_framework.urls")),
     path("token/", views.obtain_auth_token, name="token"),
     path("", include("user_register.urls")),
     path("", include("classroom_creation.urls")),
@@ -12,4 +10,11 @@ urlpatterns = [
     path("", include("absence_register.urls")),
     path("student/", include("student_consulting.urls")),
     path("teacher/", include("teacher_consulting.urls")),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
+    path(
+        "docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
 ]
