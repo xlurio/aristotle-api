@@ -26,7 +26,7 @@ services:
       - redis
       - db
     environment:
-      APP_ENVIRONMENT: "production"
+      DJANGO_SETTINGS_MODULE: "app.production_settings"
       DATABASE_NAME: "app_db"
       DATABASE_USER: "root"
       DATABASE_PASSWORD: "password"
