@@ -1,4 +1,5 @@
 <h1 align="center">AristotleAPI</h1>
+<p align="center"><em align="center">The REST API for smart teacher-student management</em></p>
 
 <p align="center">
   <a href="https://codecov.io/gh/xlurio/aristotle-api" > 
@@ -8,8 +9,5 @@
     <img src="https://github.com/xlurio/aristotle-api/actions/workflows/test.yml/badge.svg" alt="Test"/>
   </a>
 </p>
-
-
-A REST API for a school management system
 
 **Work in progress**
