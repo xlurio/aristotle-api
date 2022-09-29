@@ -133,3 +133,4 @@ dmypy.json
 
 # Development tools
 *.ps1
+register_admin.py

@@ -10,4 +10,29 @@
   </a>
 </p>
 
-**Work in progress**
+
+## Introduction
+
+## Quick Start
+
+Let's learn the fundamentals on the AristotleAPI by:
+1. Creating a staff
+2. Authenticating
+3. Creating a teacher
+4. Creating a student
+5. Creating classroom with the teacher and the student as members
+6. Register a grade
+7. Register a absence
+8. View student data
+9. View teacher data
+
+### Creating a Staff
+
+First you will need to have access to a staff user, which can be created from the server console by using the following command:
+
+```
+$ python manage.py createsuperuser
+Registration number: staff
+Password:
+```
+
