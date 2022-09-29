@@ -17,14 +17,13 @@
 
 Let's learn the fundamentals on the AristotleAPI by:
 1. Creating a staff
-2. Authenticating
-3. Creating a teacher
-4. Creating a student
-5. Creating classroom with the teacher and the student as members
-6. Register a grade
-7. Register a absence
-8. View student data
-9. View teacher data
+2. Creating a teacher
+3. Creating a student
+4. Creating classroom with the teacher and the student as members
+5. Register a grade
+6. Register a absence
+7. View student data
+8. View teacher data
 
 ### Creating a Staff
 
