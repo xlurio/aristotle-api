@@ -20,7 +20,7 @@ class GradeDetailSerializer(serializers.ModelSerializer):
         fields = ["title", "grade_value"]
 
 
-class GradeSerializer(serializers.ModelSerializer):
+class TeacherReadOnlyGradeSerializer(serializers.ModelSerializer):
     """Serializer for the grade data"""
 
     grade_values = GradeDetailSerializer(many=True, read_only=True)
@@ -42,7 +42,7 @@ class AbsenceDetailSerializer(serializers.ModelSerializer):
         fields = ["absence_date"]
 
 
-class AbsenceSerializer(serializers.ModelSerializer):
+class TeacherReadOnlyAbsenceSerializer(serializers.ModelSerializer):
     """Serializer for the absence data"""
 
     absence_dates = AbsenceDetailSerializer(many=True, read_only=True)
@@ -57,8 +57,8 @@ class AbsenceSerializer(serializers.ModelSerializer):
 class ClassroomStudentsSerializer(serializers.ModelSerializer):
     """Serializer for the classroom student data"""
 
-    grades = GradeSerializer(many=True, read_only=True)
-    absence = AbsenceSerializer(many=True, read_only=True)
+    grades = TeacherReadOnlyGradeSerializer(many=True, read_only=True)
+    absence = TeacherReadOnlyAbsenceSerializer(many=True, read_only=True)
 
     class Meta:
         """Class room student serializer meta data"""

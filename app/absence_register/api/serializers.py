@@ -10,6 +10,7 @@ from core import models
 class AbsenceSerializer(serializers.ModelSerializer):
     """Serializer for absence objects"""
 
+    id = serializers.ReadOnlyField()
     classroom = serializers.PrimaryKeyRelatedField(
         queryset=models.ClassRoom.objects.all()
     )
@@ -21,7 +22,7 @@ class AbsenceSerializer(serializers.ModelSerializer):
         """Absence serializer meta data"""
 
         model = models.Absence
-        fields = ["absence_date", "classroom", "student"]
+        fields = ["id", "absence_date", "classroom", "student"]
 
     def create(self, validated_data: Any) -> models.Absence:
         factory = AbsenceFactory()

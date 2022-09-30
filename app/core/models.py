@@ -116,7 +116,7 @@ class StudentClassroom(models.Model):
 
     user_id = models.IntegerField(null=False)
     classroom_id = models.IntegerField(null=False)
-    student = models.CharField(_("student"), max_length=255)
+    classroom = models.CharField(_("classroom"), max_length=255)
 
 
 class TeacherClassroom(models.Model):

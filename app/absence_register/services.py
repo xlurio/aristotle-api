@@ -136,11 +136,11 @@ class ReadOnlyAbsenceFactory:
             )
 
         except ObjectDoesNotExist:
-            student: str = self._absence.student.full_name
+            classroom: str = self._absence.classroom.name
 
             student_classroom: StudentClassroom = self._student_classrooms.create(
                 user_id=user_id,
-                student=student,
+                classroom=classroom,
                 classroom_id=classroom_id,
             )
             student_classroom.save()

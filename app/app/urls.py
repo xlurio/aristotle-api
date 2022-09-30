@@ -1,6 +1,8 @@
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.authtoken import views
+from django.conf import settings
+
 
 urlpatterns = [
     path("token/", views.obtain_auth_token, name="token"),
@@ -18,3 +20,8 @@ urlpatterns = [
         name="swagger-ui",
     ),
 ]
+
+if settings.DEBUG == True:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+    urlpatterns += staticfiles_urlpatterns()
