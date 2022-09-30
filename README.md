@@ -13,7 +13,7 @@
 
 ## Introduction
 
-The AristotleAPI is REST API that provides a smart management of grades and absences for students for each class room. Currently it has the following features:
+The AristotleAPI is REST API that provides a smart management of students grades and absences for schools and colleges. Currently it has the following features:
 
 * Administrators can register teachers
 * Administrators can register students
