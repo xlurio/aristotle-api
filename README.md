@@ -146,7 +146,7 @@ The response should something like:
 ```
 
 
-## Creating a classroom
+### Creating a classroom
 
 Finally, let's create our class room. For that we will make the following request:
 
