@@ -63,7 +63,7 @@ Password:
 Where `staff` is the chosen username. 
 
 
-## Authenticating as staff
+### Authenticating as staff
 
 Now you'll need to create an authentication token for the staff user by using the following request:
 
@@ -146,7 +146,7 @@ The response should something like:
 ```
 
 
-## Creating a classroom
+### Creating a classroom
 
 Finally, let's create our class room. For that we will make the following request:
 
@@ -180,7 +180,7 @@ Being `1` the ID of the teacher and `2` the ID of the student. The response shou
 ```
 
 
-## Authenticating as teacher
+### Authenticating as teacher
 
 Now let's become a teacher. We will get the authentication token for the teacher user by making the following request:
 
