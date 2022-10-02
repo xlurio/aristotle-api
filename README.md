@@ -44,7 +44,7 @@ Let's learn the fundamentals on the AristotleAPI.
 To launch the API locally, you can run the following command in the root folder:
 
 ```
-gunicorn
+$ gunicorn
 ```
 
 **Warning: this method is not recommended for application at production**
