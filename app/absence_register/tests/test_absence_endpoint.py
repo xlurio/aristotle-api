@@ -47,12 +47,15 @@ class PrivateAbsenceEndpointTests(TestCase):
         expected_status_code = status.HTTP_201_CREATED
         actual_status_code = result.status_code
 
-        expected_content = {
-            "absence_date": str(arrangement["absence_date"]),
-            "classroom": arrangement["classroom"],
-            "student": arrangement["student"],
-        }
-        actual_content = result.data
+        expected_absence_date = str(arrangement.get("absence_date", ""))
+        expected_classroom = arrangement.get("classroom", "")
+        expected_student = arrangement.get("student", "")
+
+        actual_absence_date = result.data.get("absence_date", "")
+        actual_classroom = result.data.get("classroom", "")
+        actual_student = result.data.get("student", "")
 
         self.assertEqual(expected_status_code, actual_status_code)
-        self.assertEqual(expected_content, actual_content)
+        self.assertEqual(expected_absence_date, actual_absence_date)
+        self.assertEqual(expected_classroom, actual_classroom)
+        self.assertEqual(expected_student, actual_student)

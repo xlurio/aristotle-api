@@ -207,7 +207,7 @@ def make_fake_student_classroom(
     new_classroom = StudentClassroom.objects.create(
         user_id=student.id,
         classroom_id=classroom.id,
-        student=student.full_name,
+        classroom=classroom.name,
     )
     new_classroom.save()
 
